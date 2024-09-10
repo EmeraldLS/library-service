@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    volumes:
+      - ./admin:/lib-svc/admin
+    ports:
+      - "2324:2324"
+    environment:
+      - FLASK_APP=api
+      - FLASK_ENV=development
+    depends_on:
+      - db
+
+  public:
+    build:
+      context: .
+      dockerfile: Dockerfile.public
+    volumes:
+     - ./public:/lib-svc/public
+     - ./admin:/lib-svc/admin
+    ports:
+      - "2323:2323"
+    environment:
+      - FLASK_APP=public.api
+      - FLASK_ENV=development
+
+  db:
+    image: nouchka/sqlite3
+    volumes:
+      - ./data:/data
+    environment:
+      - SQLITE_DATABASE=/data/library.db
+
+volumes:
+  data:
